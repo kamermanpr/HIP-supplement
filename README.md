@@ -14,7 +14,7 @@ This repository contains supplementary files for the HIV Pain Intervention Proje
 ## Bibliometric information
 
 #### Repository citation
-Kamerman P, Madden V, Wadley A, Parker R, Cameron S, Devan D, Jackson K, Reardon C. Supplementary files: Non-pharmacological management of pain in HIV/AIDS: a bridge too far if you are a poor, depressed South African? _figshare_ , 2018. DOI: [10.6084/m9.figshare.6148394](https://doi.org/10.6084/m9.figshare.6148394)
+Kamerman P, Madden V, Wadley A, Parker R, Cameron S, Devan D, Jackson K, Reardon C. Supplementary files: Non-pharmacological management of pain in HIV/AIDS: a bridge too far if you are a poor, depressed South African? _Figshare_ , 2018. DOI: [10.6084/m9.figshare.6148394](https://doi.org/10.6084/m9.figshare.6148394)
 
 #### Manuscript citation 
 Parker R, Madden VL, Devan D, Cameron S, Jackson K, Kamerman PR, Reardon C, Wadley A. Non-pharmacological management of pain in HIV/AIDS: a bridge too far if you are a poor, depressed South African?
