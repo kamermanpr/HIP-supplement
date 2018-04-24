@@ -1,0 +1,299 @@
+---
+title: 'Tabulated descriptive data'
+author: 'Peter Kamerman and Tory Madden'
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+# Load packages
+library(tidyverse)
+library(magrittr)
+library(skimr)
+library(tableone)
+
+# Set knitr options
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE)
+```
+
+## Description
+
+Descriptive statistics of core demographic, depression, quality of life, pain, and self-efficacy data at baseline (time = 0 weeks) for the whole cohort, and stratified by sex.
+
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+
+## Import, clean, and process data
+
+#### Demographic data
+
+```{r demographics}
+# Get data
+demo <- read_rds('./data/demographics.rds') %>%
+    # Transfer CD4 data to CD4_recent if missing CD4_recent data 
+    # (i.e. most updated CD4 count available)
+    mutate(CD4_uptodate =
+               ifelse(is.na(CD4_recent),
+                      yes = CD4,
+                      no = CD4_recent)) %>%
+    # Categorise years of schooling into 7 years or less, 8-12 years, 
+    # and more than 12 years of education
+    mutate(Education_category = case_when(
+        Years_education <= 7 ~ '0-7 years',
+        Years_education > 7 & Years_education <= 12 ~ '8-12 years',
+        Years_education > 12 ~ 'More than 12 years')) %>%
+    # Re-level HIV treatment column
+    mutate(HIV_mx = case_when(
+        HIV_mx == 'first-line' ~ 'first-line ART',
+        HIV_mx == 'second-line' ~ 'second-line ART',
+        HIV_mx == 'monitoring' ~ 'no ART')) %>% 
+    mutate(HIV_mx = factor(HIV_mx)) %>% 
+    # Select required columns
+    select(ID, Site, Sex, Age,
+           Years_on_ART, CD4_uptodate, HIV_mx,
+           Education_category, SOS_mnemonic) %>% 
+    # Final clean-up
+    mutate(Years_on_ART = round(Years_on_ART, 1),
+           SOS_mnemonic = ifelse(SOS_mnemonic == 'lhl',
+                                 yes = 'Limited health literacy',
+                                 no = 'Health literacy')) %>% 
+    rename(Age_in_years = Age,
+           Years_on_ART = Years_on_ART,
+           Most_recent_CD4 = CD4_uptodate,
+           HIV_treatment = HIV_mx,
+           Years_of_education = Education_category,
+           Study_site = Site)
+```
+
+#### Depression 
+
+Beck's Depression Inventory
+
+```{r depression}
+# Get data
+bdi <- read_rds('./data/bdi.rds') %>%
+    # Select required columns
+    select(ID, ends_with('BL'))  %>%
+    # Make a total score column
+    mutate_at(.vars = 2:22, as.integer) %>%
+    mutate(bdi_TOTAL = rowSums(.[2:22])) %>%
+    # Select required columns
+    select(ID, bdi_TOTAL) %>% 
+    # Final clean-up
+    rename(BDI_score = bdi_TOTAL)
+```
+
+#### Pain data
+
+Brief Pain Inventory
+
+```{r pain}
+# Get data
+bpi <- read_rds('./data/bpi.rds')
+
+# Rural KZN site did not include average pain question, 
+# so use split-apply-combine approach.
+
+# Split-apply
+bpi_M <- bpi %>% 
+    # Extract site M participants
+    filter(str_detect(ID, pattern = 'M')) %>% 
+    # Select required columns
+    select(ID, ends_with('BL')) %>%
+    select(ID, 3:4, 6, 9:15) %>%
+    # Calculate Pain severity score (PSS) at baseline (averaged over 4 items)
+    mutate(PSS = round(rowMeans(.[2:4]), 1)) %>%
+    # Calculate Pain interference score (PIS) at baseline
+    mutate(PIS = round(rowMeans(.[5:11]), 1)) %>%
+    #remove unwanted columns
+    select(ID, PSS, PIS)
+
+bpi_OTHER <- bpi %>% 
+    # Extract site M participants
+    filter(!str_detect(ID, pattern = 'M')) %>% 
+    # Select required columns
+    select(ID, ends_with('BL')) %>%
+    select(ID, 3:6, 9:15) %>%
+    # Calculate Pain severity score (PSS) at baseline (averaged over 5 items)
+    mutate(PSS = round(rowMeans(.[2:5]), 1)) %>%
+    # Calculate Pain interference score (PIS) at baseline
+    mutate(PIS = round(rowMeans(.[6:12]), 1)) %>%
+    # Select required columns
+    select(ID, PSS, PIS) 
+
+# Combine
+bpi <- bind_rows(bpi_OTHER, bpi_M) %>% 
+    # Final clean-up
+    rename(Pain_severity_score = PSS,
+           Pain_interference_score = PIS)
+
+# Clean-up
+rm(bpi_M, bpi_OTHER)
+```
+
+#### Quality of life
+
+Euroqol(EQ)-5D (3L)
+
+```{r qol}
+eq5d <- read_rds('./data/eq5d.rds') %>%
+    # Select required columns
+    select(ID, contains('BL'))
+
+# Calculate eq5d index score
+# Create basic term = 1 for all cases in new column
+eq5d$index_core <- 1
+
+# Sum all rows for total BL index score and allocate to a new column in eq5d data frame 
+eq5d %<>% mutate(index_sum = rowSums(.[2:6]))
+
+# Create constant term to subtract if any domain scores > 1 (i.e. index_sum > 5)
+eq5d %<>% mutate(EQ5D_constant = ifelse(index_sum > 5, 
+                                        yes = 0.081, 
+                                        no = 0))
+
+# Assign index scores to each domain
+eq5d %<>% mutate(mobility_index = ifelse(Mobility.BL == 2, 
+                                         yes = 0.069,
+                                         no = ifelse(Mobility.BL == 3, 
+                                                     yes = 0.314,
+                                                     no = 0)))
+
+eq5d %<>% mutate(self_care_index = ifelse(Self_care.BL == 2,
+                                          yes = 0.104,
+                                          no = ifelse(Self_care.BL == 3, 
+                                                      yes = 0.214,
+                                                      no = 0)))
+
+eq5d %<>% mutate(usual_act_index = ifelse(Usual_activities.BL == 2, 
+                                          yes = 0.036,
+                                          no = ifelse(Usual_activities.BL == 3, 
+                                                      yes = 0.094,
+                                                      no = 0)))
+
+eq5d %<>% mutate(pain_index = ifelse(Pain.BL == 2,
+                                     yes = 0.123,
+                                     no = ifelse(Pain.BL == 3, 
+                                                 yes = 0.386,
+                                                 no = 0)))
+
+eq5d %<>% mutate(anx_depr_index = ifelse(Anxiety_and_depression.BL == 2,
+                                         yes = 0.071,
+                                         no = ifelse(Anxiety_and_depression.BL == 3, 
+                                                     yes = 0.236,
+                                                     no = 0)))
+
+# Calculate index score
+eq5d %<>% mutate(eq5d_index = 
+                     index_core - 
+                     EQ5D_constant - 
+                     mobility_index - 
+                     self_care_index - 
+                     usual_act_index - 
+                     pain_index - 
+                     anx_depr_index)
+
+# Select required columns
+eq5d %<>% select(ID,
+                 State_of_health.BL,
+                 eq5d_index) %>% 
+    # Final clean-up
+    rename(EQ5D_state_of_health_VAS = State_of_health.BL,
+           EQ5D_index_score = eq5d_index)
+```
+
+#### Self-efficacy
+
+Self-efficacy for Managing Chronic Disease 6-item Scale (SE6)
+
+```{r function}
+se6 <- read_rds('./data/se6.rds') %>%
+    # Select required columns
+    select(ID, ends_with('BL')) %>%
+    # Calculate SE6 at baseline
+    mutate(se6_score = round(rowMeans(.[2:7]), 1)) %>%
+    # Select required columns
+    select(ID, se6_score) %>% 
+    # Final clean-up
+    rename(SE6_score = se6_score)
+```
+
+#### Combine datasets
+
+```{r combine}
+data <- demo %>% 
+    left_join(bdi) %>%
+    left_join(bpi) %>%
+    left_join(eq5d) %>%
+    left_join(se6)
+```
+
+## Quick look
+
+```{r quick_look}
+# Check data
+glimpse(data)
+```
+
+## Summary
+
+#### Missingness
+
+```{r missing}
+# Check completeness
+data %>% 
+    skim_to_wide() %>% 
+    select(variable, missing, complete, n) %>%
+    mutate_at(.vars = c(2:4),
+              .funs = as.integer) %>% 
+    arrange(complete)
+```
+
+#### Tabulated for the whole cohort
+
+```{r tab}
+# Define table parameters
+# Create a list of the variables we want to tabulate
+vars_list <- names(data[ , 2:15])
+
+# Define categorical variables
+cat_vars <- vars_list[c(1:2, 6:8)] 
+
+# Define non-normal data
+non_vars <- vars_list[c(4:5, 8:14)]
+```
+
+
+```{r tab_all}
+# Create overall table
+tab_all <- CreateTableOne(vars = vars_list, 
+                          data = data, 
+                          factorVars = cat_vars)
+
+# Print table
+print(tab_all, 
+      nonnormal = non_vars,
+      showAllLevels = TRUE)
+```
+
+#### Tabulated by sex
+
+```{r tab_sex}
+# Create table by sex
+tab_sex <- CreateTableOne(vars = vars_list, 
+                          data = data, 
+                          factorVars = cat_vars, 
+                          strata = c('Sex'))
+
+# Print table
+print(tab_sex, 
+      nonnormal = non_vars,
+      showAllLevels = TRUE,
+      test = FALSE)
+```
+
+## Session information
+
+```{r session_info, echo = FALSE}
+sessionInfo()
+```
