@@ -1,11 +1,18 @@
 ---
 title: 'Tabulated descriptive data'
 author: 'Peter Kamerman and Tory Madden'
-date: "`r format(Sys.Date(), '%d %B %Y')`"
 output: github_document
 ---
 
-```{r setup, include = FALSE}
+## Description
+
+Descriptive statistics of core demographic, depression, quality of life, pain, and self-efficacy data at baseline (time = 0 weeks) for the whole cohort, and stratified by sex.
+
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+
+## Setup 
+
+```{r setup}
 # Load packages
 library(tidyverse)
 library(magrittr)
@@ -16,12 +23,6 @@ library(tableone)
 knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE)
 ```
-
-## Description
-
-Descriptive statistics of core demographic, depression, quality of life, pain, and self-efficacy data at baseline (time = 0 weeks) for the whole cohort, and stratified by sex.
-
-**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
 
 ## Import, clean, and process data
 
