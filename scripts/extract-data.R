@@ -6,7 +6,7 @@
 
 ############################################################
 #                                                          #
-#           Note: The original demographic data            #
+#                 Note: The original data                  #
 #           that this script cleans is available           #
 #              on request only. The data have              #
 #        not been made publically available because        #
@@ -29,9 +29,9 @@ library(skimr)
 #                                                          #
 ############################################################
 # Extract demographic information
-demographics <- read_excel(path = 'original-data/demographics.xlsx', 
+demographics <- read_excel(path = './original-data/demographics.xlsx',
                            sheet = "demographics") %>%
-    # Remove empty rows 
+    # Remove empty rows
     filter(!is.na(Nr)) %>%
     # Convert '9999' missing to <NA>
     mutate_all(funs(ifelse(. == '9999',
@@ -50,7 +50,7 @@ demographics <- read_excel(path = 'original-data/demographics.xlsx',
            CM_dx = `CM Dx`,
            SOS_mnemonic = `SOS Mnemonic`) %>%
     # Fix column classes
-    mutate(# DOB 
+    mutate(# DOB
            DOB = gsub(pattern = '/',
                       replacement = '-',
                       x = DOB),
@@ -63,10 +63,10 @@ demographics <- read_excel(path = 'original-data/demographics.xlsx',
            # Recent CD4
            CD4_recent = round(CD4_recent)) %>%
     # Convert all text to lowercase
-    mutate_if(.predicate = is.character, 
-              .funs = str_to_lower) %>% 
+    mutate_if(.predicate = is.character,
+              .funs = str_to_lower) %>%
     # Convert ID, Group, Site back to uppercase
-    mutate_at(.vars = c('ID', 'Group', 'Site'), 
+    mutate_at(.vars = c('ID', 'Group', 'Site'),
               .funs = str_to_upper)
 
 # Have a look
@@ -140,7 +140,7 @@ demographics %<>%
     # Order education levels
     mutate(Years_education = factor(Years_education,
                                     levels = rev(c('12+', '12', '11', '10', '9',
-                                                   '8', '7', '6', '5', '4', '3', 
+                                                   '8', '7', '6', '5', '4', '3',
                                                    '2', '1', '0')),
                                     ordered = TRUE)) %>%
     # Remove HLOE column
@@ -157,10 +157,8 @@ demographics %<>%
     filter(Group != 'E')
 
 # Save outputs
-write_rds(x = demographics, 
+write_rds(x = demographics,
           path = './data/demographics.rds')
-write_csv(x = demographics,
-          path = './data/demographics.csv')
 
 ############################################################
 #                                                          #
@@ -168,22 +166,22 @@ write_csv(x = demographics,
 #                                                          #
 ############################################################
 # Group E (for removal later)
-group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25', 
-             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58', 
+group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25',
+             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58',
              'J63', 'J64', 'J65', 'J66', 'J69', 'J70')
 
 # Extract BPI information
-BPI_scores <- read_excel(path = 'original-data/amalgamated_data.xlsx', 
+BPI_scores <- read_excel(path = './original-data/amalgamated_data.xlsx',
                          sheet = "BPI")
 
 # Remove empty row at top of sheet
 BPI_clean <- BPI_scores[-1,]
-        
-# Fix column names by renaming appropriately. 
+
+# Fix column names by renaming appropriately.
 # Use setnames command with concatenation as assign to BPI_clean data frame:
 BPI_clean <-
     setNames(BPI_clean, c(
-        'ID', 
+        'ID',
         'Pain_present.BL',
         'Pain_present.Wk4',
         'Pain_present.Wk8',
@@ -196,7 +194,7 @@ BPI_clean <-
         'Worst_pain.Wk12',
         'Worst_pain.Wk24',
         'Worst_pain.Wk48',
-        'Least_pain.BL', 
+        'Least_pain.BL',
         'Least_pain.Wk4',
         'Least_pain.Wk8',
         'Least_pain.Wk12',
@@ -268,24 +266,24 @@ BPI_clean <-
         'Enjoyment_of_life.Wk12',
         'Enjoyment_of_life.Wk24',
         'Enjoyment_of_life.Wk48'))
-    
+
 head(BPI_clean)
 
 # Convert '9999' missing to <NA>
-BPI_clean %<>%    
+BPI_clean %<>%
     mutate_all(funs(ifelse(. == '9999',
                            yes = NA,
                            no = .)))
 
 # Fix column classes
 BPI_clean %<>%
-    mutate_at(.vars = c(1:7, 32:37), 
-              .funs = as.character) %>% 
-    mutate_at(.vars = c(8:31, 38:85), 
+    mutate_at(.vars = c(1:7, 32:37),
+              .funs = as.character) %>%
+    mutate_at(.vars = c(8:31, 38:85),
               .funs = as.integer)
 
 # Remove Group E participants
-BPI_clean <- filter(BPI_clean, 
+BPI_clean <- filter(BPI_clean,
                     !ID %in% group_e)
 
 # Have a look
@@ -293,26 +291,8 @@ glimpse(BPI_clean)
 skim(BPI_clean)
 
 # Save outputs
-write_rds(x = BPI_clean, 
+write_rds(x = BPI_clean,
           path = './data/bpi.rds')
-write_csv(x = BPI_clean,
-          path = './data/bpi.csv')
-
-# Select Baseline columns only for factor analysis
-BPI_baseline <- select(BPI_clean, contains('BL')) %>% 
-    # Remove unrequired columns
-    select(-Pain_present.BL,
-           -Receiving_rx.BL, 
-           -Relief_rx.BL) %>% 
-    # Retain complete cases only 
-    # (will remove R1 data - missing 'Avg.BL' data)
-    filter(complete.cases(.))
-
-# Save output
-write_rds(x = BPI_baseline, 
-          path = './data/bpi_factor_analysis.rds')
-write_csv(x = BPI_baseline, 
-          path = './data/bpi_factor_analysis.csv')
 
 ############################################################
 #                                                          #
@@ -320,12 +300,12 @@ write_csv(x = BPI_baseline,
 #                                                          #
 ############################################################
 # Group E (for removal later)
-group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25', 
-             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58', 
+group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25',
+             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58',
              'J63', 'J64', 'J65', 'J66', 'J69', 'J70')
 
 # Extract BDI information
-BDI_scores <- read_excel(path = 'original-data/amalgamated_data.xlsx', 
+BDI_scores <- read_excel(path = './original-data/amalgamated_data.xlsx',
                          sheet = "BDI")
 
 # Remove empty row at top of sheet
@@ -334,11 +314,11 @@ BDI_clean <- BDI_scores[-1,]
 # Check
 glimpse(BDI_clean)
 
-# Fix column names by renaming appropriately. 
+# Fix column names by renaming appropriately.
 # Use setnames command with concatenation as assign to BDI_clean data frame:
 BDI_clean <-
     setNames(BDI_clean, c(
-        'ID', 
+        'ID',
         'Sadness.BL',
         'Sadness.Wk4',
         'Sadness.Wk8',
@@ -351,7 +331,7 @@ BDI_clean <-
         'Pessimism.Wk12',
         'Pessimism.Wk24',
         'Pessimism.Wk48',
-        'Past_failures.BL', 
+        'Past_failures.BL',
         'Past_failures.Wk4',
         'Past_failures.Wk8',
         'Past_failures.Wk12',
@@ -470,7 +450,7 @@ BDI_clean <-
 glimpse(BDI_clean)
 
 # Convert '9999' missing to <NA>
-BDI_clean %<>%    
+BDI_clean %<>%
     mutate_all(funs(ifelse(. == '9999',
                            yes = NA,
                            no = .)))
@@ -479,44 +459,44 @@ BDI_clean %<>%
 BDI_clean %<>%
     filter(!ID %in% group_e)
 
-# Fix column classes with 
+# Fix column classes with
 BDI_clean %<>%
-    separate(col = Appetite_a.BL, 
-             into = c('Appetite.BL', 'extra'), 
+    separate(col = Appetite_a.BL,
+             into = c('Appetite.BL', 'extra'),
              sep = 1) %>%
-    separate(col = Appetite_a.Wk4, 
-             into = c('Appetite.Wk4', 'extra'), 
+    separate(col = Appetite_a.Wk4,
+             into = c('Appetite.Wk4', 'extra'),
              sep = 1) %>%
-    separate(col = Appetite_a.Wk8, 
-             into = c('Appetite.Wk8', 'extra'), 
+    separate(col = Appetite_a.Wk8,
+             into = c('Appetite.Wk8', 'extra'),
              sep = 1) %>%
-    separate(col = Appetite_a.Wk12, 
-             into = c('Appetite.Wk12', 'extra'), 
+    separate(col = Appetite_a.Wk12,
+             into = c('Appetite.Wk12', 'extra'),
              sep = 1) %>%
-    separate(col = Appetite_a.Wk24, 
-             into = c('Appetite.Wk24', 'extra'), 
+    separate(col = Appetite_a.Wk24,
+             into = c('Appetite.Wk24', 'extra'),
              sep = 1) %>%
-    separate(col = Appetite_a.Wk48, 
-             into = c('Appetite.Wk48', 'extra'), 
-             sep = 1) %>% 
-    separate(col = Sleep_a.BL, 
-             into = c('Sleep.BL', 'extra'), 
+    separate(col = Appetite_a.Wk48,
+             into = c('Appetite.Wk48', 'extra'),
              sep = 1) %>%
-    separate(col = Sleep_a.Wk4, 
-             into = c('Sleep.Wk4', 'extra'), 
+    separate(col = Sleep_a.BL,
+             into = c('Sleep.BL', 'extra'),
              sep = 1) %>%
-    separate(col = Sleep_a.Wk8, 
-             into = c('Sleep.Wk8', 'extra'), 
+    separate(col = Sleep_a.Wk4,
+             into = c('Sleep.Wk4', 'extra'),
              sep = 1) %>%
-    separate(col = Sleep_a.Wk12, 
-             into = c('Sleep.Wk12', 'extra'), 
+    separate(col = Sleep_a.Wk8,
+             into = c('Sleep.Wk8', 'extra'),
              sep = 1) %>%
-    separate(col = Sleep_a.Wk24, 
-             into = c('Sleep.Wk24', 'extra'), 
+    separate(col = Sleep_a.Wk12,
+             into = c('Sleep.Wk12', 'extra'),
              sep = 1) %>%
-    separate(col = Sleep_a.Wk48, 
-             into = c('Sleep.Wk48', 'extra'), 
-             sep = 1) %>% 
+    separate(col = Sleep_a.Wk24,
+             into = c('Sleep.Wk24', 'extra'),
+             sep = 1) %>%
+    separate(col = Sleep_a.Wk48,
+             into = c('Sleep.Wk48', 'extra'),
+             sep = 1) %>%
     select(-extra)
 
 # Convert columns to numeric
@@ -529,10 +509,8 @@ glimpse(BDI_clean)
 skim(BDI_clean)
 
 # Save outputs
-write_rds(x = BDI_clean, 
+write_rds(x = BDI_clean,
           path = './data/bdi.rds')
-write_csv(x = BDI_clean,
-          path = './data/bdi.csv')
 
 ############################################################
 #                                                          #
@@ -540,22 +518,22 @@ write_csv(x = BDI_clean,
 #                                                          #
 ############################################################
 # Group E (for removal later)
-group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25', 
-             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58', 
+group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25',
+             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58',
              'J63', 'J64', 'J65', 'J66', 'J69', 'J70')
 
 # Extract EQ-5D information
-EQ5D <- read_excel(path = 'original-data/amalgamated_data.xlsx', 
+EQ5D <- read_excel(path = './original-data/amalgamated_data.xlsx',
                    sheet = "EQ5D")
 
 # Remove empty row at top of sheet
 EQ5D_clean <- EQ5D[-1,]
 
-# Fix column names by renaming appropriately. 
+# Fix column names by renaming appropriately.
 # Use setnames command with concatenation as assign to BPI_clean data frame:
 EQ5D_clean <-
     setNames(EQ5D_clean, c(
-        'ID', 
+        'ID',
         'Mobility.BL',
         'Mobility.Wk4',
         'Mobility.Wk8',
@@ -568,7 +546,7 @@ EQ5D_clean <-
         'Self_care.Wk12',
         'Self_care.Wk24',
         'Self_care.Wk48',
-        'Usual_activities.BL', 
+        'Usual_activities.BL',
         'Usual_activities.Wk4',
         'Usual_activities.Wk8',
         'Usual_activities.Wk12',
@@ -597,18 +575,18 @@ EQ5D_clean <-
 glimpse(EQ5D_clean)
 
 # Convert '9999' missing to <NA>
-EQ5D_clean %<>%    
+EQ5D_clean %<>%
     mutate_all(funs(ifelse(. == '9999',
                            yes = NA,
                            no = .)))
 
 # Remove Group E participants
-EQ5D_clean %<>% 
+EQ5D_clean %<>%
     filter(!ID %in% group_e)
 
 # Fix column classes
 EQ5D_clean %<>%
-    mutate_at(.vars = 2:37, 
+    mutate_at(.vars = 2:37,
               .funs = as.integer)
 
 # Have a look
@@ -616,10 +594,8 @@ glimpse(EQ5D_clean)
 skim(EQ5D_clean)
 
 # Save outputs
-write_rds(x = EQ5D_clean, 
+write_rds(x = EQ5D_clean,
           path = './data/eq5d.rds')
-write_csv(x = EQ5D_clean,
-          path = './data/eq5d.csv')
 
 ############################################################
 #                                                          #
@@ -627,22 +603,22 @@ write_csv(x = EQ5D_clean,
 #                                                          #
 ############################################################
 # Group E (for removal later)
-group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25', 
-             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58', 
+group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25',
+             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58',
              'J63', 'J64', 'J65', 'J66', 'J69', 'J70')
 
 # Extract SE-6 information
-SE6_scores <- read_excel(path = 'original-data/amalgamated_data.xlsx', 
+SE6_scores <- read_excel(path = './original-data/amalgamated_data.xlsx',
                          sheet = "SE6")
 
 # Remove empty row at top of sheet
 SE6_clean <- SE6_scores[-1,]
 
-# Fix column names by renaming appropriately. 
+# Fix column names by renaming appropriately.
 # Use setnames command with concatenation and assign to SE6_clean data frame:
 SE6_clean <-
     setNames(SE6_clean, c(
-        'ID', 
+        'ID',
         'Fatigue.BL',
         'Fatigue.Wk4',
         'Fatigue.Wk8',
@@ -655,7 +631,7 @@ SE6_clean <-
         'Physical_discomfort.Wk12',
         'Physical_discomfort.Wk24',
         'Physical_discomfort.Wk48',
-        'Emotional_distress.BL', 
+        'Emotional_distress.BL',
         'Emotional_distress.Wk4',
         'Emotional_distress.Wk8',
         'Emotional_distress.Wk12',
@@ -684,7 +660,7 @@ SE6_clean <-
 glimpse(SE6_clean)
 
 # Convert '9999' missing to <NA>
-SE6_clean <- SE6_clean %>%    
+SE6_clean <- SE6_clean %>%
     mutate_all(funs(ifelse(. == '9999',
                            yes = NA,
                            no = .)))
@@ -695,7 +671,7 @@ SE6_clean %<>%
 
 # Fix column classes
 SE6_clean %<>%
-    mutate_at(.vars = 2:37, 
+    mutate_at(.vars = 2:37,
               .funs = as.integer)
 
 # Have a look
@@ -703,125 +679,5 @@ glimpse(SE6_clean)
 skim(SE6_clean)
 
 # Save outputs
-write_rds(x = SE6_clean, 
+write_rds(x = SE6_clean,
           path = './data/se6.rds')
-write_csv(x = SE6_clean,
-          path = './data/se6.csv')
-
-############################################################
-#                                                          #
-#                           Simmonds                       #
-#                                                          #
-############################################################
-# Group E (for removal later)
-group_e <- c('J2', 'J8', 'J13', 'J14', 'J15', 'J16', 'J20', 'J21', 'J25', 
-             'J26', 'J27', 'J28', 'J39', 'J47', 'J48', 'J50', 'J58', 
-             'J63', 'J64', 'J65', 'J66', 'J69', 'J70')
-
-# Extract Simmonds Battery information
-Simmonds_scores <- read_excel(path = 'original-data/amalgamated_data.xlsx', 
-                              sheet = "Simmonds")
-
-# Remove 2 empty rows at top of sheet
-Simmonds_clean <- Simmonds_scores[-c(1,2),]
-
-# Fix column names by renaming appropriately. 
-# Use setnames command with concatenation and assign to Simmonds_clean data frame:
-Simmonds_clean <-
-    setNames(Simmonds_clean, c(
-        'ID', 
-        'Preferred_speed.BL',
-        'Preferred_speed.Wk4',
-        'Preferred_speed.Wk8',
-        'Preferred_speed.Wk12',
-        'Preferred_speed.Wk24',
-        'Preferred_speed.Wk48',
-        'Fastest_speed.BL',
-        'Fastest_speed.Wk4',
-        'Fastest_speed.Wk8',
-        'Fastest_speed.Wk12',
-        'Fastest_speed.Wk24',
-        'Fastest_speed.Wk48',
-        'Unloaded_reach.BL', 
-        'Unloaded_reach.Wk4',
-        'Unloaded_reach.Wk8',
-        'Unloaded_reach.Wk12',
-        'Unloaded_reach.Wk24',
-        'Unloaded_reach.Wk48',
-        'Loaded_reach.BL',
-        'Loaded_reach.Wk4',
-        'Loaded_reach.Wk8',
-        'Loaded_reach.Wk12',
-        'Loaded_reach.Wk24',
-        'Loaded_reach.Wk48',
-        'Sit_to_stand1.BL',
-        'Sit_to_stand1.Wk4',
-        'Sit_to_stand1.Wk8',
-        'Sit_to_stand1.Wk12',
-        'Sit_to_stand1.Wk24',
-        'Sit_to_stand1.Wk48',
-        'Sit_to_stand2.BL',
-        'Sit_to_stand2.Wk4',
-        'Sit_to_stand2.Wk8',
-        'Sit_to_stand2.Wk12',
-        'Sit_to_stand2.Wk24',
-        'Sit_to_stand2.Wk48',
-        'Sock_test.BL',
-        'Sock_test.Wk4',
-        'Sock_test.Wk8',
-        'Sock_test.Wk12',
-        'Sock_test.Wk24',
-        'Sock_test.Wk48',
-        'Reach_up.BL',
-        'Reach_up.Wk4',
-        'Reach_up.Wk8',
-        'Reach_up.Wk12',
-        'Reach_up.Wk24',
-        'Reach_up.Wk48',
-        'Distance.BL',
-        'Distance.Wk4',
-        'Distance.Wk8',
-        'Distance.Wk12',
-        'Distance.Wk24',
-        'Distance.Wk48',
-        'Belt_tie.BL',
-        'Belt_tie.Wk4',
-        'Belt_tie.Wk8',
-        'Belt_tie.Wk12',
-        'Belt_tie.Wk24',
-        'Belt_tie.Wk48'))
-
-# Quick look
-glimpse(Simmonds_clean)
-
-# Convert '9999' missing to <NA>
-Simmonds_clean %<>%
-    mutate_all(funs(ifelse(. == '9999',
-                           yes = NA,
-                           no = .)))
-
-# Remove Group E participants
-Simmonds_clean %<>%
-    filter(!ID %in% group_e)
-
-# Col 2-13 and 26-37 must be numeric with 2 decimal points
-Simmonds_clean %<>%
-    mutate_at(.vars = c(2:13, 26:61), 
-              .funs = as.numeric) %>%
-    mutate_at(.vars = c(2:13, 26:61), 
-              .funs = round, digits = 2)
-    
-# Col 14-25 must be integers
-Simmonds_clean %<>%
-    mutate_at(.vars = 14:25, 
-              .funs = as.integer) 
-
-# Have a look
-glimpse(Simmonds_clean)
-skim(Simmonds_clean)
-
-# Save outputs
-write_rds(x = Simmonds_clean, 
-          path = './data/simmonds.rds')
-write_csv(x = Simmonds_clean,
-          path = './data/simmonds.csv')
