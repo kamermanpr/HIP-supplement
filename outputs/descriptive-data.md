@@ -7,7 +7,7 @@ Description
 
 Descriptive statistics of core demographic, depression, quality of life, pain, and self-efficacy data at baseline (time = 0 weeks) for the whole cohort, and stratified by sex.
 
-**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker (<romy.parker@uct.ac.za>), Dr Antonia Wadley (<antonia.wadley@wits.ac.za>), or open an [*issue*](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker (<romy.parker@uct.ac.za>), Dr Antonia Wadley (<antonia.wadley@wits.ac.za>), or open an [*issue*](issues) on this repo.**
 
 Setup
 -----
@@ -15,47 +15,8 @@ Setup
 ``` r
 # Load packages
 library(tidyverse)
-```
-
-    ## ── Attaching packages ─────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-
-    ## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
-    ## ✔ tibble  1.4.2          ✔ dplyr   0.7.4     
-    ## ✔ tidyr   0.8.0          ✔ stringr 1.3.0     
-    ## ✔ readr   1.1.1          ✔ forcats 0.3.0
-
-    ## ── Conflicts ────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-
-``` r
 library(magrittr)
-```
-
-    ## 
-    ## Attaching package: 'magrittr'
-
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     set_names
-
-    ## The following object is masked from 'package:tidyr':
-    ## 
-    ##     extract
-
-``` r
 library(skimr)
-```
-
-    ## 
-    ## Attaching package: 'skimr'
-
-    ## The following objects are masked from 'package:dplyr':
-    ## 
-    ##     contains, ends_with, everything, matches, num_range, one_of,
-    ##     starts_with
-
-``` r
 library(tableone)
 
 # Set knitr options
@@ -70,7 +31,7 @@ Import, clean, and process data
 
 ``` r
 # Get data
-demo <- read_rds('./data/demographics.rds') %>%
+demo <- read_rds('../data/demographics.rds') %>%
     # Transfer CD4 data to CD4_recent if missing CD4_recent data 
     # (i.e. most updated CD4 count available)
     mutate(CD4_uptodate =
@@ -112,7 +73,7 @@ Beck's Depression Inventory
 
 ``` r
 # Get data
-bdi <- read_rds('./data/bdi.rds') %>%
+bdi <- read_rds('../data/bdi.rds') %>%
     # Select required columns
     select(ID, ends_with('BL'))  %>%
     # Make a total score column
@@ -130,7 +91,7 @@ Brief Pain Inventory
 
 ``` r
 # Get data
-bpi <- read_rds('./data/bpi.rds')
+bpi <- read_rds('../data/bpi.rds')
 
 # Rural KZN site did not include average pain question, 
 # so use split-apply-combine approach.
@@ -177,7 +138,7 @@ rm(bpi_M, bpi_OTHER)
 Euroqol(EQ)-5D (3L)
 
 ``` r
-eq5d <- read_rds('./data/eq5d.rds') %>%
+eq5d <- read_rds('../data/eq5d.rds') %>%
     # Select required columns
     select(ID, contains('BL'))
 
@@ -248,7 +209,7 @@ eq5d %<>% select(ID,
 Self-efficacy for Managing Chronic Disease 6-item Scale (SE6)
 
 ``` r
-se6 <- read_rds('./data/se6.rds') %>%
+se6 <- read_rds('../data/se6.rds') %>%
     # Select required columns
     select(ID, ends_with('BL')) %>%
     # Calculate SE6 at baseline
@@ -511,7 +472,7 @@ Session information
     ## Running under: macOS High Sierra 10.13.4
     ## 
     ## Matrix products: default
-    ## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+    ## BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
     ## LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
@@ -525,26 +486,27 @@ Session information
     ##  [4] magrittr_1.5       forcats_0.3.0      stringr_1.3.0     
     ##  [7] dplyr_0.7.4        purrr_0.2.4        readr_1.1.1       
     ## [10] tidyr_0.8.0        tibble_1.4.2       ggplot2_2.2.1.9000
-    ## [13] tidyverse_1.2.1   
+    ## [13] tidyverse_1.2.1    usethis_1.3.0      devtools_1.13.5   
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] zoo_1.8-1         tidyselect_0.2.4  reshape2_1.4.3   
-    ##  [4] pander_0.6.1      splines_3.4.4     haven_1.1.1      
-    ##  [7] lattice_0.20-35   labelled_1.0.1    colorspace_1.3-2 
-    ## [10] htmltools_0.3.6   yaml_2.1.18       utf8_1.1.3       
-    ## [13] survival_2.41-3   rlang_0.2.0       e1071_1.6-8      
-    ## [16] pillar_1.2.1      foreign_0.8-69    glue_1.2.0       
-    ## [19] modelr_0.1.1      readxl_1.0.0      bindr_0.1.1      
-    ## [22] plyr_1.8.4        munsell_0.4.3     gtable_0.2.0     
-    ## [25] cellranger_1.1.0  rvest_0.3.2       psych_1.8.3.3    
-    ## [28] evaluate_0.10.1   knitr_1.20        class_7.3-14     
-    ## [31] parallel_3.4.4    broom_0.4.4       Rcpp_0.12.16     
-    ## [34] scales_0.5.0.9000 backports_1.1.2   jsonlite_1.5     
-    ## [37] mnormt_1.5-5      hms_0.4.2         digest_0.6.15    
-    ## [40] stringi_1.1.7     survey_3.33-2     grid_3.4.4       
-    ## [43] rprojroot_1.3-2   cli_1.0.0         tools_3.4.4      
-    ## [46] lazyeval_0.2.1    crayon_1.3.4      pkgconfig_2.0.1  
-    ## [49] MASS_7.3-49       Matrix_1.2-14     xml2_1.2.0       
-    ## [52] lubridate_1.7.4   assertthat_0.2.0  rmarkdown_1.9    
-    ## [55] httr_1.3.1        rstudioapi_0.7    R6_2.2.2         
-    ## [58] nlme_3.1-137      compiler_3.4.4
+    ##  [1] Rcpp_0.12.16      lubridate_1.7.4   lattice_0.20-35  
+    ##  [4] class_7.3-14      zoo_1.8-1         assertthat_0.2.0 
+    ##  [7] rprojroot_1.3-2   digest_0.6.15     psych_1.8.3.3    
+    ## [10] utf8_1.1.3        R6_2.2.2          cellranger_1.1.0 
+    ## [13] plyr_1.8.4        backports_1.1.2   labelled_1.0.1   
+    ## [16] survey_3.33-2     evaluate_0.10.1   e1071_1.6-8      
+    ## [19] httr_1.3.1        pillar_1.2.1      rlang_0.2.0      
+    ## [22] lazyeval_0.2.1    readxl_1.0.0      rstudioapi_0.7   
+    ## [25] Matrix_1.2-14     rmarkdown_1.9     splines_3.4.4    
+    ## [28] foreign_0.8-69    pander_0.6.1      munsell_0.4.3    
+    ## [31] broom_0.4.4       compiler_3.4.4    modelr_0.1.1     
+    ## [34] pkgconfig_2.0.1   mnormt_1.5-5      htmltools_0.3.6  
+    ## [37] tidyselect_0.2.4  crayon_1.3.4      withr_2.1.2      
+    ## [40] MASS_7.3-49       grid_3.4.4        nlme_3.1-137     
+    ## [43] jsonlite_1.5      gtable_0.2.0      scales_0.5.0.9000
+    ## [46] cli_1.0.0         stringi_1.1.7     reshape2_1.4.3   
+    ## [49] xml2_1.2.0        tools_3.4.4       glue_1.2.0       
+    ## [52] hms_0.4.2         rsconnect_0.8.8   parallel_3.4.4   
+    ## [55] survival_2.41-3   yaml_2.1.18       colorspace_1.3-2 
+    ## [58] rvest_0.3.2       memoise_1.1.0     knitr_1.20       
+    ## [61] bindr_0.1.1       haven_1.1.1

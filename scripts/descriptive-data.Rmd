@@ -8,7 +8,7 @@ output: github_document
 
 Descriptive statistics of core demographic, depression, quality of life, pain, and self-efficacy data at baseline (time = 0 weeks) for the whole cohort, and stratified by sex.
 
-**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](issues) on this repo.**
 
 ## Setup 
 
@@ -30,7 +30,7 @@ knitr::opts_chunk$set(warning = FALSE,
 
 ```{r demographics}
 # Get data
-demo <- read_rds('./data/demographics.rds') %>%
+demo <- read_rds('../data/demographics.rds') %>%
     # Transfer CD4 data to CD4_recent if missing CD4_recent data 
     # (i.e. most updated CD4 count available)
     mutate(CD4_uptodate =
@@ -72,7 +72,7 @@ Beck's Depression Inventory
 
 ```{r depression}
 # Get data
-bdi <- read_rds('./data/bdi.rds') %>%
+bdi <- read_rds('../data/bdi.rds') %>%
     # Select required columns
     select(ID, ends_with('BL'))  %>%
     # Make a total score column
@@ -90,7 +90,7 @@ Brief Pain Inventory
 
 ```{r pain}
 # Get data
-bpi <- read_rds('./data/bpi.rds')
+bpi <- read_rds('../data/bpi.rds')
 
 # Rural KZN site did not include average pain question, 
 # so use split-apply-combine approach.
@@ -137,7 +137,7 @@ rm(bpi_M, bpi_OTHER)
 Euroqol(EQ)-5D (3L)
 
 ```{r qol}
-eq5d <- read_rds('./data/eq5d.rds') %>%
+eq5d <- read_rds('../data/eq5d.rds') %>%
     # Select required columns
     select(ID, contains('BL'))
 
@@ -208,7 +208,7 @@ eq5d %<>% select(ID,
 Self-efficacy for Managing Chronic Disease 6-item Scale (SE6)
 
 ```{r function}
-se6 <- read_rds('./data/se6.rds') %>%
+se6 <- read_rds('../data/se6.rds') %>%
     # Select required columns
     select(ID, ends_with('BL')) %>%
     # Calculate SE6 at baseline
