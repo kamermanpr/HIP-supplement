@@ -1,0 +1,9 @@
+.Rhistory
+.Rapp.history
+.Rproj.user
+.Rproj
+.DS_Store
+Icon?
+*.xlsx
+*.rds
+*.txt
