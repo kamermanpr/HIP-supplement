@@ -9,7 +9,7 @@ This repository contains supplementary files for the HIV Pain Intervention Proje
 - The data cleaning and data analysis R/RMarkdown scripts ([scripts/](https://github.com/kamermanpr/HIP-supplement/scripts))  
 - The ouputs of the RMarkdown scripts ([outputs/](https://github.com/kamermanpr/HIP-supplement/outputs))  
 
-**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](issues) on this repo.**
 
 ## Bibliometric information
 
