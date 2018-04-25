@@ -7,7 +7,7 @@ Description
 
 Descriptive statistics of core demographic, depression, quality of life, pain, and self-efficacy data at baseline (time = 0 weeks) for the whole cohort, and stratified by sex.
 
-**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker (<romy.parker@uct.ac.za>), Dr Antonia Wadley (<antonia.wadley@wits.ac.za>), or open an [*issue*](issues) on this repo.**
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker (<romy.parker@uct.ac.za>), Dr Antonia Wadley (<antonia.wadley@wits.ac.za>), or open an [*issue*](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
 
 Setup
 -----
@@ -482,31 +482,34 @@ Session information
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] bindrcpp_0.2.2     tableone_0.9.2     skimr_1.0.2       
+    ##  [1] tableone_0.9.2     bindrcpp_0.2.2     skimr_1.0.2       
     ##  [4] magrittr_1.5       forcats_0.3.0      stringr_1.3.0     
     ##  [7] dplyr_0.7.4        purrr_0.2.4        readr_1.1.1       
     ## [10] tidyr_0.8.0        tibble_1.4.2       ggplot2_2.2.1.9000
-    ## [13] tidyverse_1.2.1    usethis_1.3.0      devtools_1.13.5   
+    ## [13] tidyverse_1.2.1    readxl_1.0.0       usethis_1.3.0     
+    ## [16] devtools_1.13.5   
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_0.12.16      lubridate_1.7.4   lattice_0.20-35  
-    ##  [4] class_7.3-14      zoo_1.8-1         assertthat_0.2.0 
-    ##  [7] rprojroot_1.3-2   digest_0.6.15     psych_1.8.3.3    
-    ## [10] utf8_1.1.3        R6_2.2.2          cellranger_1.1.0 
-    ## [13] plyr_1.8.4        backports_1.1.2   labelled_1.0.1   
-    ## [16] survey_3.33-2     evaluate_0.10.1   e1071_1.6-8      
-    ## [19] httr_1.3.1        pillar_1.2.1      rlang_0.2.0      
-    ## [22] lazyeval_0.2.1    readxl_1.0.0      rstudioapi_0.7   
-    ## [25] Matrix_1.2-14     rmarkdown_1.9     splines_3.4.4    
-    ## [28] foreign_0.8-69    pander_0.6.1      munsell_0.4.3    
-    ## [31] broom_0.4.4       compiler_3.4.4    modelr_0.1.1     
-    ## [34] pkgconfig_2.0.1   mnormt_1.5-5      htmltools_0.3.6  
-    ## [37] tidyselect_0.2.4  crayon_1.3.4      withr_2.1.2      
-    ## [40] MASS_7.3-49       grid_3.4.4        nlme_3.1-137     
-    ## [43] jsonlite_1.5      gtable_0.2.0      scales_0.5.0.9000
-    ## [46] cli_1.0.0         stringi_1.1.7     reshape2_1.4.3   
-    ## [49] xml2_1.2.0        tools_3.4.4       glue_1.2.0       
-    ## [52] hms_0.4.2         rsconnect_0.8.8   parallel_3.4.4   
-    ## [55] survival_2.41-3   yaml_2.1.18       colorspace_1.3-2 
-    ## [58] rvest_0.3.2       memoise_1.1.0     knitr_1.20       
-    ## [61] bindr_0.1.1       haven_1.1.1
+    ##  [1] Rcpp_0.12.16        lubridate_1.7.4     lattice_0.20-35    
+    ##  [4] zoo_1.8-1           class_7.3-14        utf8_1.1.3         
+    ##  [7] assertthat_0.2.0    rprojroot_1.3-2     digest_0.6.15      
+    ## [10] psych_1.8.3.3       R6_2.2.2            cellranger_1.1.0   
+    ## [13] plyr_1.8.4          backports_1.1.2     labelled_1.0.1     
+    ## [16] e1071_1.6-8         survey_3.33-2       evaluate_0.10.1    
+    ## [19] httr_1.3.1          pillar_1.2.1        rlang_0.2.0        
+    ## [22] lazyeval_0.2.1      curl_3.2            rstudioapi_0.7     
+    ## [25] data.table_1.10.4-3 car_3.0-0           Matrix_1.2-14      
+    ## [28] rmarkdown_1.9       splines_3.4.4       foreign_0.8-69     
+    ## [31] pander_0.6.1        munsell_0.4.3       broom_0.4.4        
+    ## [34] compiler_3.4.4      modelr_0.1.1        pkgconfig_2.0.1    
+    ## [37] mnormt_1.5-5        littleboxes_0.1.0   htmltools_0.3.6    
+    ## [40] tidyselect_0.2.4    rio_0.5.10          crayon_1.3.4       
+    ## [43] withr_2.1.2         MASS_7.3-49         grid_3.4.4         
+    ## [46] nlme_3.1-137        jsonlite_1.5        gtable_0.2.0       
+    ## [49] scales_0.5.0.9000   cli_1.0.0           stringi_1.1.7      
+    ## [52] carData_3.0-1       reshape2_1.4.3      xml2_1.2.0         
+    ## [55] openxlsx_4.0.17     tools_3.4.4         glue_1.2.0         
+    ## [58] hms_0.4.2           survival_2.41-3     rsconnect_0.8.8    
+    ## [61] abind_1.4-5         parallel_3.4.4      yaml_2.1.18        
+    ## [64] colorspace_1.3-2    rvest_0.3.2         memoise_1.1.0      
+    ## [67] knitr_1.20          bindr_0.1.1         haven_1.1.1
