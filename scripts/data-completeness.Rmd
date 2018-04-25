@@ -1,18 +1,20 @@
 ---
-title: "HIP: Data completeness"
+title: "Data completeness"
 author: "Peter Kamerman"
-date: "`r format(Sys.Date(), '%d %B %Y')`"
-output: 
-   html_document:
-        theme: yeti
-        keep_md: true
-        highlight: pygments
-        toc: true
-        toc_float: true
-        code_folding: show
+output: github_document
 ---
 
-```{r setup, include = FALSE}
+## Description
+
+A descriptive analysis of the completeness of data across the 48 weeks of the trial.
+
+Because the Brief Pain Inventory (BPI) was used to collect the primary outcome measure for the study (pain intensity), we assummed the BPI would provide the most representative index of completion rates. 
+
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+
+## Setup
+
+```{r setup}
 # Load packages
 library(tidyverse)
 library(magrittr)
@@ -26,27 +28,19 @@ knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE,
                       fig.retina = 2,
                       fig.align = 'center',
-                      fig.path = 'figures/completeness/',
+                      fig.path = '../outputs/figures/data-completeness/',
                       fig.width = 9,
                       fig.height = 7)
 ```
 
-----
-
-A descriptive analysis of the completeness of data across the 48 weeks of the trial.
-
-Because the BPI was used to collect the primary outcome measure for the study (pain intensity), we assummed the BPI would be representative of completion rates across all outcome measures (BDI, EQ-5D, Simmonds, and SE-6). 
-
-----
-
-# Import data
+## Import data
 
 ```{r data_import}
 # Read in bpi data
-bpi <- read_rds('./data/bpi.rds') 
+bpi <- read_rds('../data/bpi.rds') 
 
 # Read in site and group info
-foo <- read_rds('./data/demographics.rds') %>%
+foo <- read_rds('../data/demographics.rds') %>%
     select(ID, Site, Group)
 
 # Join the two datasets 
@@ -57,9 +51,7 @@ bpi %<>%
 rm(foo)
 ```
 
-----
-
-# Tabular summary of completeness
+## Tabular summary of completeness
 
 This summary ignores study site and intervention group stratification.
 
@@ -108,9 +100,7 @@ Although there are small variations in the number of missing data across BPI ite
 
 Note that `Average_pain` values are greater because average pain data were not recorded at the _R1_ site (n = 47).
 
-----
-
-# Clean data
+## Clean data
 
 ```{r prep_clean}
 # Gather into long format and process time/question column
@@ -134,13 +124,11 @@ bpi %<>%
            time = as.integer(time)) 
 ```
 
-----
-
-# Graphical summaries of completeness
+## Graphical summaries of completeness
 
 These summaries are stratified by study site, and study site and intervention group.
 
-### Study site
+#### Study site
 
 ```{r completeness_site, fig.height = 10}
 bpi %>%
@@ -177,7 +165,7 @@ bpi %>%
           axis.ticks.x = element_blank())
 ```
 
-### Study site and intervention group
+#### Study site and intervention group
 
 ```{r completeness_group}
 complete_group <- bpi %>%
@@ -228,13 +216,11 @@ complete_group <- bpi %>%
 walk(.x = complete_group$plot, ~ print(.x))
 ```
 
-----
-
-# Continuous data collection
+## Continuous data collection
 
 The number of participants with data across successive time points.
 
-### Prepare data
+#### Prepare data
 
 ```{r prepare_successive}
 bpi_successive <- bpi %>% 
@@ -249,7 +235,7 @@ bpi_successive <- bpi %>%
     mutate(cumulative_data = cumsum(answer_numeric)) 
 ```
 
-### Study site
+#### Study site
 
 ```{r site_successive}
 bpi_successive %>%     
@@ -280,7 +266,7 @@ bpi_successive %>%
                scales = 'free_y')
 ```
 
-### Study site and intervention group
+#### Study site and intervention group
 
 ```{r group_successive}
 bpi_successive %>%     
@@ -309,17 +295,13 @@ bpi_successive %>%
                scales = 'free_y')
 ```
 
-----
-
-# Summary
+## Summary
 
 Other than site _R1_, the other sites have 100% or near 100% (_U1_) records at baseline (time = 0 weeks), thereafter, there is a trend for progressively more incomplete data over time. 
 
 The number of participants with continuous data over successive reassessment time-points shows substantial drop-off over the 48 weeks.
 
-----
-
-# Manuscript plot
+## Manuscript plot
 
 A figure of loss to follow-up for publication purposes. 
 
@@ -484,7 +466,7 @@ p1 <- ggplot(data = bpi_summary) +
           axis.line = element_line(size = 0.9))
 
 p1
-ggsave(filename = 'figure-1_colourA.pdf',
+ggsave(filename = '../outputs/figures/data-completeness/figure-1_colourA.pdf',
        height = 8, width = 10, units = 'in')
 
 # Colour (light)
@@ -514,7 +496,7 @@ p2 <- ggplot(data = bpi_summary) +
           axis.line = element_line(size = 0.9))
 
 p2
-ggsave(filename = 'figure-1_colourB.pdf',
+ggsave(filename = '../outputs/figures/data-completeness/figure-1_colourB.pdf',
        height = 8, width = 10, units = 'in')
 
 # Greyscale
@@ -544,14 +526,12 @@ p3 <- ggplot(data = bpi_summary) +
           axis.line = element_line(size = 0.9))
 
 p3
-ggsave(filename = 'figure-1_greyscale.pdf',
+ggsave(filename = '../outputs/figures/data-completeness/figure-1_greyscale.pdf',
        height = 8, width = 10, units = 'in')
 
 ```
 
-----
-
-# Session information
+## Session information
 
 ```{r session_info, echo = FALSE}
 sessionInfo()
