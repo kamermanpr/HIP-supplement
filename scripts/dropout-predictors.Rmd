@@ -1,18 +1,19 @@
 ---
-title: "HIP: Dropout predictors"
-subtitle: "Do baseline employment and/or depression predict dropout by week 8?"
+title: "Dropout predictors"
+subtitle: "What baseline factors predict dropout by week 8"
 author: "Peter Kamerman and Tory Madden"
-date: "`r format(Sys.Date(), '%d %B %Y')`"
-output: 
-    html_document:
-        theme: yeti
-        keep_md: true
-        highlight: pygments
-        toc: true
-        toc_float: true
+output: github_document
 ---
 
-```{r setup, include = FALSE}
+## Description
+
+We assessed four baseline (week 0) predictors of dropout (employment/stable income, depression, study group allocation, and sex) from the study at week 8, with week 8 being 2 weeks after the completion of the 6 week programme. 
+
+**Note: Participant consent did not provide for the publication of their data, and hence neither the original nor cleaned data have been made available. However, we do not wish to bar access to the data unnecessarily and we will judge requests to access the data on a case-by-case basis. Examples of potential use cases include independent assessments of our analyses, and secondary data analyses. Please contact Prof Romy Parker ([romy.parker@uct.ac.za](mailto:romy.parker@uct.ac.za)), Dr Antonia Wadley ([antonia.wadley@wits.ac.za](mailto:antonia.wadley@wits.ac.za)), or open an [_issue_](https://github.com/kamermanpr/HIP-supplement/issues) on this repo.**
+
+## Setup
+
+```{r setup}
 # Load packages
 library(magrittr)
 library(tidyverse)
@@ -27,37 +28,29 @@ knitr::opts_chunk$set(warning = FALSE,
                       message = FALSE,
                       fig.retina = 2,
                       fig.align = 'center',
-                      fig.path = 'figures/dropout-predictors/',
+                      fig.path = '../outputs/figures/dropout-predictors/',
                       fig.width = 7,
                       fig.height = 7)
 ```
 
-----
-
-We assessed two predictors of dropout (employment/stable income, depression) from the study at week 8, with week 8 being two weeks after the completion on the 6 week programme. 
-
-----
-
-# Import data
+## Import data
 
 ```{r import_data}
 # Get data
 ## BPI
-bpi <- read_rds('data/bpi.rds') %>% 
+bpi <- read_rds('../data/bpi.rds') %>% 
     select(ID, Pain_present.Wk8)
 
 ## Demographics
-demo <- read_rds('data/demographics.rds') %>% 
+demo <- read_rds('../data/demographics.rds') %>% 
     select(ID, Site, Group, Sex, Occupation)
 
 ## BDI
-bdi <- read_rds('data/bdi.rds') %>% 
+bdi <- read_rds('../data/bdi.rds') %>% 
     select(ID, ends_with('BL'))
 ```
 
-----
-
-# Quick look
+## Quick look
 
 ```{r quick_look}
 glimpse(bpi)
@@ -65,9 +58,7 @@ glimpse(demo)
 glimpse(bdi)
 ```
 
-----
-
-# Clean data
+## Clean data
 
 ```{r clean_data}
 ############################################################
@@ -151,11 +142,9 @@ bdi %<>%
     left_join(bpi)
 ```
 
-----
+## Employment/income stability
 
-# Employment/income stability
-
-### Tabulate 
+#### Tabulate 
 
 _(no stratification)_
 
@@ -167,7 +156,7 @@ demo %>% group_by(income_stability) %>%
                  col.names = c('', 'Count'))
 ```
 
-### Null hypothesis significance testing (NHST)
+#### Null hypothesis significance testing (NHST)
 
 ```{r employment_nhst}
 # xtabulate the data
@@ -191,11 +180,9 @@ knitr::kable(tidy(fisher.test(employ)),
              digits = 3)
 ```
 
-----
+## Depression and anxiety
 
-# Depression and anxiety
-
-### Tabulate 
+#### Tabulate 
 
 _(no stratification)_
 
@@ -207,7 +194,7 @@ bdi %>% group_by(bdi_category) %>%
                  col.names = c('', 'Count'))
 ```
 
-### Null hypothesis significance testing (NHST)
+#### Null hypothesis significance testing (NHST)
 
 ```{r depression_nhst}
 # xtabulate the data
@@ -244,11 +231,9 @@ knitr::kable(oddR,
              caption = 'Odds ratio of regression coefficients')
 ```
 
-----
+## Study group allocation
 
-# Study group allocation
-
-### Tabulate 
+#### Tabulate 
 
 _(no stratification)_
 
@@ -260,7 +245,7 @@ demo %>% group_by(Group) %>%
                  col.names = c('', 'Count'))
 ```
 
-### Null hypothesis significance testing (NHST)
+#### Null hypothesis significance testing (NHST)
 
 ```{r group_nhst}
 # xtabulate the data
@@ -284,11 +269,9 @@ knitr::kable(tidy(fisher.test(employ)),
              digits = 3)
 ```
 
----- 
+## Sex
 
-# Sex
-
-### Tabulate 
+#### Tabulate 
 
 _(no stratification)_
 
@@ -300,7 +283,7 @@ demo %>% group_by(Sex) %>%
                  col.names = c('', 'Count'))
 ```
 
-### Null hypothesis significance testing (NHST)
+#### Null hypothesis significance testing (NHST)
 
 ```{r sex_nhst}
 # xtabulate the data
@@ -324,15 +307,11 @@ knitr::kable(tidy(fisher.test(employ)),
              digits = 3)
 ```
 
-----
-
-# Summary
+## Summary
 
 Income stability, sex, and group allocation did not predict whether or not an individual's data were present at 8 weeks.  However, depression did: those with greater depression (on BDI) were more likely to have been lost to follow-up at the 8-week time point (main effect of depression severity: likelihood ratio = 11.31, df = 3, p = 0.01; OR for linear component of logistic regression = 4.01, 95% CI = 1.68 - 11.59).
 
-----
-
-# Manuscript plot
+## Manuscript plot
 
 Plot of proportion of participants with missing data at each level of depression severity, as rated on the Beck's Depression Inventory. Numbers in the blocks show the absolute counts. 
 
@@ -378,7 +357,7 @@ p1 <- bdi %>%
           axis.ticks = element_blank())
 
 p1
-ggsave(filename = 'figure-2_colourA.pdf',
+ggsave(filename = '../outputs/figures/dropout-predictors/figure-2_colourA.pdf',
        height = 8, width = 10, units = 'in')
 
 # Colour (light)
@@ -420,7 +399,7 @@ p2 <- bdi %>%
           axis.ticks = element_blank())
 
 p2
-ggsave(filename = 'figure-2_colourB.pdf',
+ggsave(filename = '../outputs/figures/dropout-predictors/figure-2_colourB.pdf',
        height = 8, width = 10, units = 'in')
 
 # Greyscale
@@ -462,14 +441,11 @@ p3 <- bdi %>%
           axis.ticks = element_blank())
 
 p3
-ggsave(filename = 'figure-2_greyscale.pdf',
+ggsave(filename = '../outputs/figures/dropout-predictors/figure-2_greyscale.pdf',
        height = 8, width = 10, units = 'in')
 ```
 
-
-----
-
-# Session information
+## Session information
 
 ```{r session_info, echo = FALSE}
 sessionInfo()
