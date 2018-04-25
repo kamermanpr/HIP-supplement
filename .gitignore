@@ -4,6 +4,7 @@
 .Rproj
 .DS_Store
 Icon?
+*.html
 *.xlsx
 *.rds
 *.txt
