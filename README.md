@@ -4,7 +4,7 @@
 
 This repository contains supplementary files for the HIV Pain Intervention Project (HIP). These files include: 
 
-- The study protocol (protocol.pdf) 
+- The study protocol ([protocol.pdf](protocol.pdf) 
 - The data cleaning and data analysis R/RMarkdown scripts ([scripts/](scripts/))  
 - The ouputs of the RMarkdown scripts ([outputs/](outputs/))  
 
